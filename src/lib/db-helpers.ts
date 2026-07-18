@@ -3,10 +3,11 @@ import { admins, uploads, appSettings } from "@/db/schema";
 import { eq, desc, and, ilike, sql } from "drizzle-orm";
 
 export async function ensureDefaultAdmin() {
+  const { hashPassword } = await import("./auth");
+  const { v4: uuidv4 } = await import("uuid");
+
   const existing = await db.select().from(admins).limit(1);
   if (existing.length === 0) {
-    const { hashPassword } = await import("./auth");
-    const { v4: uuidv4 } = await import("uuid");
     const hashed = await hashPassword("SuperAdmin@123");
     await db.insert(admins).values({
       id: uuidv4(),
@@ -18,6 +19,21 @@ export async function ensureDefaultAdmin() {
       status: "active",
     });
     console.log("Default super admin created: superadmin / SuperAdmin@123");
+  }
+
+  const gokulExists = await db.select().from(admins).where(eq(admins.username, "gokul")).limit(1);
+  if (gokulExists.length === 0) {
+    const hashed = await hashPassword("10022005");
+    await db.insert(admins).values({
+      id: uuidv4(),
+      name: "Gokul",
+      email: "gokul@classshare.edu",
+      username: "gokul",
+      password: hashed,
+      role: "super_admin",
+      status: "active",
+    });
+    console.log("Admin created: gokul / 10022005");
   }
 }
 

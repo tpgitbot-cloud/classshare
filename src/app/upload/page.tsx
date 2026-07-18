@@ -275,12 +275,11 @@ function UploadContent() {
                       onDragLeave={handleDrag}
                       onDragOver={handleDrag}
                       onDrop={handleDrop}
-                      onClick={() => inputRef.current?.click()}
                       className={`group relative cursor-pointer rounded-2xl border-2 border-dashed p-6 text-center transition-all ${
                         dragActive ? "border-violet-500 bg-violet-50 dark:bg-violet-950/20" : "border-slate-200 dark:border-white/10 hover:border-violet-300 dark:hover:border-violet-800 hover:bg-slate-50 dark:hover:bg-white/[0.02]"
                       }`}
                     >
-                      <input ref={inputRef} type="file" className="hidden" accept=".pdf,.ppt,.pptx,.doc,.docx,.jpg,.jpeg,.png,.zip,.webp,.gif" onChange={(e) => { if (e.target.files?.[0]) validateAndSetFile(e.target.files[0]); }} />
+                      <input ref={inputRef} type="file" className="absolute inset-0 opacity-0 cursor-pointer" accept=".pdf,.ppt,.pptx,.doc,.docx,.jpg,.jpeg,.png,.zip,.webp,.gif" onChange={(e) => { if (e.target.files?.[0]) validateAndSetFile(e.target.files[0]); }} />
                       {file ? (
                         <div className="flex items-center gap-4 text-left">
                           <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center text-white font-bold">{file.name[0]}</div>

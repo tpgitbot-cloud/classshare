@@ -34,11 +34,7 @@ export default function HomePage() {
             <Link href="/login" className="hidden md:inline-flex h-10 items-center justify-center rounded-full px-5 text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/10 transition">
               Admin Login
             </Link>
-            <Link href="/upload" className="inline-flex h-10 items-center justify-center gap-2 rounded-full bg-slate-900 dark:bg-white px-5 text-sm font-semibold text-white dark:text-black shadow-lg hover:opacity-90 transition">
-              <span className="hidden sm:inline">Student Upload</span>
-              <span className="sm:hidden">Upload</span>
-              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-white/20 dark:bg-black/10 text-[12px]">↗</span>
-            </Link>
+
           </div>
         </div>
       </header>
@@ -65,13 +61,7 @@ export default function HomePage() {
               </p>
 
               <div className="mt-8 flex flex-wrap gap-3">
-                <Link href="/upload?src=qr" className="group inline-flex h-[48px] items-center gap-3 rounded-full bg-gradient-to-r from-violet-600 to-indigo-600 px-7 text-[15px] font-semibold text-white shadow-[0_12px_24px_rgba(124,58,237,0.3)] hover:shadow-[0_16px_32px_rgba(124,58,237,0.4)] transition-all hover:translate-y-[-1px]">
-                  <span className="flex h-7 w-7 items-center justify-center rounded-full bg-white/20">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3M17 14v3h3M14 17h3M21 14v3M21 21v-3M14 21h3"/></svg>
-                  </span>
-                  Scan & Upload as Student
-                  <span className="transition group-hover:translate-x-0.5">→</span>
-                </Link>
+
                 <Link href="/login" className="inline-flex h-[48px] items-center justify-center gap-2 rounded-full border border-slate-200 dark:border-white/10 bg-white dark:bg-white/5 px-7 text-[15px] font-semibold hover:bg-slate-50 dark:hover:bg-white/10 transition">
                   Open Admin Dashboard
                 </Link>
@@ -281,8 +271,7 @@ export default function HomePage() {
                 <p className="mt-3 text-[15px] leading-6 opacity-70 max-w-[520px]">Deploy in 2 minutes. Frontend on Render Static, Backend on Render Web Service. Cloudinary folders auto-organized by Dept/Year/Section/Subject.</p>
               </div>
               <div className="flex flex-wrap gap-3 lg:justify-end">
-                <Link href="/upload?src=qr" className="inline-flex h-12 items-center justify-center rounded-full bg-white dark:bg-black text-black dark:text-white px-7 text-sm font-bold shadow-xl hover:opacity-90 transition">Start Uploading →</Link>
-                <Link href="/login" className="inline-flex h-12 items-center justify-center rounded-full border border-white/20 px-7 text-sm font-semibold hover:bg-white/10 transition">Admin Login</Link>
+<Link href="/login" className="inline-flex h-12 items-center justify-center rounded-full border border-white/20 px-7 text-sm font-semibold hover:bg-white/10 transition">Admin Login</Link>
               </div>
             </div>
           </div>

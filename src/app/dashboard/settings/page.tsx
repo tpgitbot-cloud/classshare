@@ -57,7 +57,7 @@ export default function SettingsPage() {
         </div>
         <div>
           <label className="text-xs font-bold uppercase tracking-widest text-slate-500">Max File Size (MB)</label>
-          <input type="number" value={form.maxFileSizeMb} onChange={(e) => setForm({ ...form, maxFileSizeMb: parseInt(e.target.value) })} min={1} max={200} className="mt-2 w-full h-12 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-white/5 px-4 text-sm" />
+          <input type="number" value={form.maxFileSizeMb} onChange={(e) => setForm({ ...form, maxFileSizeMb: parseInt(e.target.value) })} min={1} max={1024} className="mt-2 w-full h-12 rounded-xl border border-slate-200 dark:border-white/10 bg-white dark:bg-white/5 px-4 text-sm" />
           <p className="mt-1.5 text-xs text-slate-500">Applied to all future uploads • Cloudinary handles storage</p>
         </div>
         <div>

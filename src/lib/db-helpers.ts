@@ -42,7 +42,7 @@ export async function ensureDefaultSettings() {
   if (existing.length === 0) {
     await db.insert(appSettings).values({
       id: "main",
-      maxFileSizeMb: 50,
+      maxFileSizeMb: 1024,
       allowedFileTypes: "pdf,ppt,pptx,doc,docx,jpg,jpeg,png,zip",
       classroomName: "ClassShare Classroom",
       storageUsed: 0,

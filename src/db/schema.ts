@@ -40,7 +40,7 @@ export const uploads = pgTable("uploads", {
 export const appSettings = pgTable("app_settings", {
   id: text("id").primaryKey().default("main"),
   uploadDeadline: timestamp("upload_deadline"),
-  maxFileSizeMb: integer("max_file_size_mb").default(50).notNull(),
+  maxFileSizeMb: integer("max_file_size_mb").default(1024).notNull(),
   allowedFileTypes: text("allowed_file_types").default("pdf,ppt,pptx,doc,docx,jpg,jpeg,png,zip").notNull(),
   classroomName: varchar("classroom_name", { length: 255 }).default("ClassShare Classroom"),
   storageUsed: bigint("storage_used", { mode: "number" }).default(0).notNull(),

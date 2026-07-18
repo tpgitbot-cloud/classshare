@@ -37,7 +37,7 @@ function UploadContent() {
   const [successData, setSuccessData] = useState<any>(null);
   const [duplicateInfo, setDuplicateInfo] = useState<{ id: string; message: string } | null>(null);
   const [deadline, setDeadline] = useState<string | null>(null);
-  const [maxSize, setMaxSize] = useState(50);
+  const [maxSize, setMaxSize] = useState(1024);
 
   const inputRef = useRef<HTMLInputElement>(null);
 

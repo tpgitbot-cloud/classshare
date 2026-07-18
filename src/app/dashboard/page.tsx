@@ -300,7 +300,7 @@ export default function DashboardPage() {
                         <div className="flex justify-end gap-1 opacity-80 group-hover:opacity-100">
                           <a href={u.cloudinaryUrl} target="_blank" className="h-7 w-7 rounded-full bg-slate-100 dark:bg-white/10 flex items-center justify-center hover:bg-slate-200 text-xs" title="Preview">👁</a>
                           <Link href={`/present/${u.id}`} className="h-7 w-7 rounded-full bg-violet-600 text-white flex items-center justify-center hover:bg-violet-700 text-xs" title="Present">▶</Link>
-                          <a href={u.cloudinaryUrl} download={u.originalFileName} className="h-7 w-7 rounded-full bg-slate-900 dark:bg-white text-white dark:text-black flex items-center justify-center text-xs" title="Download">⬇</a>
+                          <a href={`/api/download/${u.id}`} download={u.originalFileName} className="h-7 w-7 rounded-full bg-slate-900 dark:bg-white text-white dark:text-black flex items-center justify-center text-xs" title="Download">⬇</a>
                           <button onClick={() => handleRename(u.id, u.displayFileName)} className="h-7 w-7 rounded-full border border-slate-200 dark:border-white/10 flex items-center justify-center hover:bg-slate-50 text-xs">✎</button>
                           <button onClick={() => handleDelete(u.id)} className="h-7 w-7 rounded-full bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 flex items-center justify-center hover:bg-red-100 text-xs">🗑</button>
                         </div>

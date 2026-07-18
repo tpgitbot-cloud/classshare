@@ -49,7 +49,7 @@ export default function PresentPage() {
         </div>
         <div className="flex items-center gap-2">
           <span className={`rounded-full px-3 py-1 text-[10px] font-bold ${upload.presentationStatus === "completed" ? "bg-emerald-500 text-white" : "bg-amber-500 text-black"}`}>{upload.presentationStatus.toUpperCase()}</span>
-          <a href={upload.cloudinaryUrl} target="_blank" className="h-9 rounded-full bg-white text-black px-4 text-xs font-bold flex items-center">Open Original ↗</a>
+              <a href={upload.cloudinaryUrl} target="_blank" className="h-9 rounded-full bg-white text-black px-4 text-xs font-bold flex items-center">Open Original ↗</a>
           <button onClick={markCompleted} className="h-9 rounded-full bg-violet-600 px-4 text-xs font-bold">Mark Completed</button>
         </div>
       </header>
@@ -66,7 +66,7 @@ export default function PresentPage() {
               <h2 className="font-display text-[28px] font-bold mt-6">{upload.displayFileName}</h2>
               <p className="text-sm text-slate-500 mt-2 max-w-[480px]">This file type ({upload.fileType.toUpperCase()}) cannot be previewed inline. Download to present using PowerPoint / Word, or open original in Cloudinary.</p>
               <div className="mt-6 flex gap-3">
-                <a href={upload.cloudinaryUrl} download={upload.originalFileName} className="h-11 rounded-full bg-slate-900 dark:bg-white text-white dark:text-black px-6 text-sm font-semibold flex items-center">Download {upload.originalFileName} ⬇</a>
+                <a href={`/api/download/${id}`} download={upload.originalFileName} className="h-11 rounded-full bg-slate-900 dark:bg-white text-white dark:text-black px-6 text-sm font-semibold flex items-center">Download {upload.originalFileName} ⬇</a>
                 <button onClick={() => window.open(upload.cloudinaryUrl, "_blank")} className="h-11 rounded-full border border-slate-200 dark:border-white/10 px-6 text-sm font-semibold">Open in new tab</button>
               </div>
               <p className="mt-8 text-[11px] text-slate-400">Cloudinary URL: {upload.cloudinaryUrl} • Public ID: {upload.cloudinaryPublicId} • Size: {(upload.fileSize / 1024 / 1024).toFixed(2)} MB</p>

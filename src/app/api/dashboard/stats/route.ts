@@ -41,7 +41,7 @@ export async function GET(req: NextRequest) {
       pending,
       completed,
       totalStorage,
-      storageUsed: settings?.storageUsed || totalStorage,
+      storageUsed: totalStorage,
       departments,
       todayUploads,
       maxFileSizeMb: settings?.maxFileSizeMb || 50,

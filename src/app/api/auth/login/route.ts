@@ -1,16 +1,66 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
-import { sql } from "drizzle-orm";
+import { admins } from "@/db/schema";
+import { eq } from "drizzle-orm";
 
 export const runtime = "nodejs";
 
 export async function POST(req: NextRequest) {
   try {
-    await db.execute(sql`select 1`);
     const body = await req.json();
     const { username, password } = body;
-    return NextResponse.json({ message: "ok", username, password: password ? "provided" : "missing" });
+
+    if (!password || !username) {
+      return NextResponse.json({ error: "Username and password required" }, { status: 400 });
+    }
+
+    const rows = await db.select().from(admins).where(eq(admins.username, username)).limit(1);
+    if (!rows.length) {
+      return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
+    }
+
+    const adminRow = rows[0];
+    if (adminRow.status !== "active") {
+      return NextResponse.json({ error: "Account is deactivated" }, { status: 403 });
+    }
+
+    const bcrypt = (await import("bcryptjs")).default;
+    const isValid = await bcrypt.compare(password, adminRow.password);
+    if (!isValid) {
+      return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
+    }
+
+    const jwt = (await import("jsonwebtoken")).default;
+    const secret = process.env.JWT_SECRET || "classshare_super_secret_key_2024_production";
+    const token = jwt.sign(
+      { id: adminRow.id, role: adminRow.role, email: adminRow.email },
+      secret,
+      { expiresIn: "7d" }
+    );
+
+    const response = NextResponse.json({
+      success: true,
+      token,
+      admin: {
+        id: adminRow.id,
+        name: adminRow.name,
+        email: adminRow.email,
+        username: adminRow.username,
+        role: adminRow.role,
+        status: adminRow.status,
+      },
+    });
+
+    response.cookies.set("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 60 * 60 * 24 * 7,
+      path: "/",
+    });
+
+    return response;
   } catch (e: any) {
-    return NextResponse.json({ error: String(e.message || e) }, { status: 500 });
+    return NextResponse.json({ error: "Internal server error", detail: String(e.message || e) }, { status: 500 });
   }
 }

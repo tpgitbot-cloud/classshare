@@ -19,8 +19,11 @@ const SECTIONS = ["A", "B", "C", "D"];
 
 function UploadContent() {
   const searchParams = useSearchParams();
-  const isFromQR = searchParams.get("src") === "qr" || searchParams.get("s") === "qr" || true; // allow all, but show QR verified
+  const token = searchParams.get("token");
+  const isFromQR = !!token || searchParams.get("src") === "qr" || searchParams.get("s") === "qr" || true;
 
+  const [tokenError, setTokenError] = useState<string | null>(null);
+  const [tokenVerified, setTokenVerified] = useState(false);
   const [form, setForm] = useState<FormDataState>({
     studentName: "",
     registerNumber: "",
@@ -49,6 +52,20 @@ function UploadContent() {
         if (d.settings?.uploadDeadline) setDeadline(d.settings.uploadDeadline);
         if (d.settings?.maxFileSizeMb) setMaxSize(d.settings.maxFileSizeMb);
       });
+    // Verify QR token if present
+    if (token) {
+      fetch("/api/qr/verify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token }),
+      })
+        .then((r) => r.json())
+        .then((d) => {
+          if (d.valid) setTokenVerified(true);
+          else setTokenError(d.error || "Invalid or expired QR token. Please scan the latest QR code from the projector.");
+        })
+        .catch(() => setTokenError("Failed to verify QR token"));
+    }
     const savedTheme = localStorage.getItem("cs_theme");
     if (savedTheme === "dark" || (!savedTheme && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
       setDarkMode(true);
@@ -214,6 +231,12 @@ function UploadContent() {
 
         <main className="flex-1">
           <div className="mx-auto max-w-[960px] px-6 py-6 lg:py-10">
+            {tokenError && (
+              <div className="mb-6 rounded-2xl bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/50 p-5 text-center">
+                <p className="text-red-800 dark:text-red-200 font-semibold">⛔ {tokenError}</p>
+                <p className="text-xs text-red-600 dark:text-red-300 mt-1">Ask your instructor to refresh the QR code on the projector screen.</p>
+              </div>
+            )}
             <div className="grid lg:grid-cols-[1.05fr_0.95fr] gap-8 items-start">
               {/* Left form */}
               <div>
@@ -323,7 +346,7 @@ function UploadContent() {
                       </div>
                     )}
 
-                    <button disabled={!isFormValid || uploading} type="submit" className="mt-5 w-full h-[52px] rounded-full bg-gradient-to-r from-violet-600 to-indigo-600 text-white font-semibold shadow-lg shadow-violet-600/20 hover:shadow-violet-600/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2">
+                    <button disabled={!isFormValid || uploading || !!tokenError} type="submit" className="mt-5 w-full h-[52px] rounded-full bg-gradient-to-r from-violet-600 to-indigo-600 text-white font-semibold shadow-lg shadow-violet-600/20 hover:shadow-violet-600/30 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center justify-center gap-2">
                       {uploading ? (
                         <>
                           <span className="h-4 w-4 rounded-full border-2 border-white/30 border-t-white animate-spin" />

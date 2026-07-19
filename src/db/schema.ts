@@ -48,8 +48,18 @@ export const appSettings = pgTable("app_settings", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
+export const qrTokens = pgTable("qr_tokens", {
+  id: text("id").primaryKey(),
+  adminId: text("admin_id").notNull().references(() => admins.id, { onDelete: "cascade" }),
+  token: varchar("token", { length: 64 }).notNull().unique(),
+  expiresAt: timestamp("expires_at").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
 export type Admin = typeof admins.$inferSelect;
 export type NewAdmin = typeof admins.$inferInsert;
 export type Upload = typeof uploads.$inferSelect;
 export type NewUpload = typeof uploads.$inferInsert;
 export type AppSetting = typeof appSettings.$inferSelect;
+export type QrToken = typeof qrTokens.$inferSelect;
+export type NewQrToken = typeof qrTokens.$inferInsert;

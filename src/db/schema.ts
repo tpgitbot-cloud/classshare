@@ -19,6 +19,7 @@ export const admins = pgTable("admins", {
 
 export const uploads = pgTable("uploads", {
   id: text("id").primaryKey(),
+  adminId: text("admin_id").references(() => admins.id, { onDelete: "set null" }),
   studentName: varchar("student_name", { length: 255 }).notNull(),
   registerNumber: varchar("register_number", { length: 100 }).notNull(),
   department: varchar("department", { length: 100 }).notNull(),

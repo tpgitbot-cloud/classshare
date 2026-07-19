@@ -2,13 +2,15 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
 import { uploads, appSettings } from "@/db/schema";
 import { authenticateRequest } from "@/lib/middleware";
-import { count, sql } from "drizzle-orm";
+import { count, eq, sql } from "drizzle-orm";
 
 export async function GET(req: NextRequest) {
   const auth = await authenticateRequest(req);
   if (!auth) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const all = await db.select().from(uploads);
+  const { admin } = auth;
+  const filter = admin.role === "super_admin" ? undefined : eq(uploads.adminId, admin.id);
+  const all = filter ? await db.select().from(uploads).where(filter) : await db.select().from(uploads);
   const settingsRows = await db.select().from(appSettings).limit(1);
   const settings = settingsRows[0];
 

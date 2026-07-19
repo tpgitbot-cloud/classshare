@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
-import { uploads, appSettings } from "@/db/schema";
-import { eq, desc, and, ilike, sql } from "drizzle-orm";
+import { uploads, appSettings, qrTokens } from "@/db/schema";
+import { eq, desc, and, gt, ilike, sql } from "drizzle-orm";
 import { v4 as uuidv4 } from "uuid";
 import { uploadToCloudinary, getCloudinaryFolderPath, getFileTypeFromName, getResourceType } from "@/lib/cloudinary";
 import { pushRealtimeEvent, ensureDefaultSettings } from "@/lib/db-helpers";
@@ -11,6 +11,10 @@ const ALLOWED_TYPES = ["pdf", "ppt", "pptx", "doc", "docx", "jpg", "jpeg", "png"
 
 export async function GET(req: NextRequest) {
   try {
+    const auth = await authenticateRequest(req);
+    if (!auth) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const { admin } = auth;
+
     const url = new URL(req.url);
     const search = url.searchParams.get("search")?.trim() || "";
     const department = url.searchParams.get("department") || "";
@@ -25,24 +29,13 @@ export async function GET(req: NextRequest) {
     const limit = Math.min(parseInt(url.searchParams.get("limit") || "20"), 100);
     const offset = (page - 1) * limit;
 
-    // Optional auth check for admin - but allow public for testing, we will protect dashboard anyway
-    // const auth = await authenticateRequest(req);
-
-    let query = db.select().from(uploads);
-
-    // Build where conditions
-    const conditions: any[] = [];
-
-    if (search) {
-      // We'll filter after query? Better use sql
-      const searchLower = `%${search.toLowerCase()}%`;
-      // We'll handle with SQL OR
-    }
-
-    // For simplicity run base query then filter in memory? But we should use SQL to avoid performance issues.
-    // Let's fetch all then filter? No, do raw sql builder.
-
-    let allUploads = await db.select().from(uploads).orderBy(desc(uploads.uploadDate));
+    let allUploads = await db
+      .select()
+      .from(uploads)
+      .where(
+        admin.role === "super_admin" ? undefined : eq(uploads.adminId, admin.id)
+      )
+      .orderBy(desc(uploads.uploadDate));
 
     // Filter
     if (search) {
@@ -131,7 +124,19 @@ export async function POST(req: NextRequest) {
     const year = formData.get("year") as string;
     const section = formData.get("section") as string;
     const subject = formData.get("subject") as string;
+    const token = formData.get("token") as string | null;
     const replaceId = formData.get("replaceId") as string | null; // for replacing before deadline
+
+    // Verify token and get adminId if present
+    let adminId: string | null = null;
+    if (token) {
+      const rows = await db
+        .select()
+        .from(qrTokens)
+        .where(and(eq(qrTokens.token, token), gt(qrTokens.expiresAt, new Date())))
+        .limit(1);
+      if (rows.length) adminId = rows[0].adminId;
+    }
 
     if (!file || !studentName || !registerNumber || !department || !year || !section || !subject) {
       return NextResponse.json({ error: "All fields and file are required" }, { status: 400 });
@@ -193,6 +198,7 @@ export async function POST(req: NextRequest) {
 
     const newUpload = {
       id: uuidv4(),
+      adminId: adminId,
       studentName: studentName.trim(),
       registerNumber: registerNumber.trim(),
       department: department.trim(),

@@ -69,12 +69,18 @@ export default function DashboardPage() {
   };
 
   const fetchQR = async () => {
-    const origin = window.location.origin;
-    const target = `${origin}/upload?src=qr`;
-    const res = await fetch(`/api/qr?url=${encodeURIComponent(target)}`);
-    const data = await res.json();
-    setQrData(data.qr);
+    try {
+      const res = await fetch("/api/qr", {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token") || ""}` },
+      });
+      if (!res.ok) return;
+      const data = await res.json();
+      setQrData(data.qr);
+      setQrUrl(data.url);
+    } catch {}
   };
+
+  const [qrUrl, setQrUrl] = useState("");
 
   useEffect(() => {
     fetchStats();
@@ -330,7 +336,7 @@ export default function DashboardPage() {
             </div>
             <div className="mt-4 rounded-2xl bg-slate-900 dark:bg-white p-4 flex flex-col items-center">
               {qrData ? <img src={qrData} alt="QR" className="h-[180px] w-[180px] rounded-xl bg-white p-2" /> : <div className="h-[180px] w-[180px] rounded-xl bg-white/10 animate-pulse" />}
-              <p className="mt-3 text-white dark:text-black font-mono text-xs font-bold">{typeof window !== "undefined" ? `${window.location.origin}/upload?src=qr` : "/upload?src=qr"}</p>
+              {qrUrl && <p className="mt-3 text-white dark:text-black font-mono text-[10px] font-bold break-all text-center px-2">{qrUrl}</p>}
               <p className="text-[10px] text-white/60 dark:text-black/60 mt-1">Students scan with phone camera</p>
             </div>
             <div className="mt-3 grid grid-cols-2 gap-2">

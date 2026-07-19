@@ -20,7 +20,7 @@ const SECTIONS = ["A", "B", "C", "D"];
 function UploadContent() {
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
-  const isFromQR = !!token || searchParams.get("src") === "qr" || searchParams.get("s") === "qr" || true;
+  const isFromQR = !!token;
 
   const [tokenError, setTokenError] = useState<string | null>(null);
   const [tokenVerified, setTokenVerified] = useState(false);
@@ -135,6 +135,7 @@ function UploadContent() {
     fd.append("year", form.year);
     fd.append("section", form.section);
     fd.append("subject", form.subject);
+    if (token) fd.append("token", token);
     if (replace && duplicateInfo) fd.append("replaceId", duplicateInfo.id);
 
     try {
@@ -203,6 +204,24 @@ function UploadContent() {
 
             <p className="mt-6 text-[11px] text-slate-500">File stored in Cloudinary: ClassShare/{successData.department}/{successData.year}/{successData.section}/{successData.subject}</p>
           </div>
+        </div>
+        <ToastContainer />
+      </div>
+    );
+  }
+
+  if (!token && !successData) {
+    return (
+      <div className={`${darkMode ? "dark" : ""}`}>
+        <div className="min-h-screen bg-[#fbfbff] dark:bg-[#050508] text-slate-900 dark:text-white flex flex-col">
+          <main className="flex-1 flex items-center justify-center p-8">
+            <div className="max-w-[480px] text-center">
+              <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-red-100 dark:bg-red-950/30 text-red-600 text-3xl">⛔</div>
+              <h1 className="font-display mt-6 text-[24px] font-bold">Access Denied</h1>
+              <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">Upload is only available via QR code scan from the classroom projector.</p>
+              <p className="mt-4 text-xs text-slate-500">Ask your instructor to display the QR code on screen, then scan it with your phone camera.</p>
+            </div>
+          </main>
         </div>
         <ToastContainer />
       </div>

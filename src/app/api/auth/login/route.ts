@@ -7,42 +7,36 @@ export const runtime = "nodejs";
 
 export async function POST(req: NextRequest) {
   try {
-    const { comparePassword, generateToken } = await import("@/lib/auth");
     const body = await req.json();
-    const { username, email, password } = body;
+    const { username, password } = body;
 
-    if (!password || (!username && !email)) {
-      return NextResponse.json({ error: "Username/email and password required" }, { status: 400 });
+    if (!password || !username) {
+      return NextResponse.json({ error: "Username and password required" }, { status: 400 });
     }
 
-    const identifier = username || email;
-    const isEmail = identifier.includes("@");
-
-    let adminRow;
-    if (isEmail) {
-      const rows = await db.select().from(admins).where(eq(admins.email, identifier.toLowerCase())).limit(1);
-      adminRow = rows[0];
-    } else {
-      const rows = await db.select().from(admins).where(eq(admins.username, identifier)).limit(1);
-      adminRow = rows[0];
-    }
-
-    if (!adminRow) {
+    const rows = await db.select().from(admins).where(eq(admins.username, username)).limit(1);
+    if (!rows.length) {
       return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
     }
 
+    const adminRow = rows[0];
     if (adminRow.status !== "active") {
       return NextResponse.json({ error: "Account is deactivated" }, { status: 403 });
     }
 
-    const isValid = await comparePassword(password, adminRow.password);
+    const bcrypt = await import("bcryptjs");
+    const isValid = await bcrypt.compare(password, adminRow.password);
     if (!isValid) {
       return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
     }
 
-    await db.update(admins).set({ lastLogin: new Date(), updatedAt: new Date() }).where(eq(admins.id, adminRow.id));
-
-    const token = generateToken({ id: adminRow.id, role: adminRow.role, email: adminRow.email });
+    const jwt = await import("jsonwebtoken");
+    const secret = process.env.JWT_SECRET || "classshare_super_secret_key_2024_production";
+    const token = jwt.default.sign(
+      { id: adminRow.id, role: adminRow.role, email: adminRow.email },
+      secret,
+      { expiresIn: "7d" }
+    );
 
     const response = NextResponse.json({
       success: true,

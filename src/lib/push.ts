@@ -6,18 +6,12 @@ function makeId() {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 10);
 }
 
-let webPush: any = null;
-let vapidKeys: { publicKey: string; privateKey: string } | null = null;
-
 async function getVapidKeys() {
-  if (vapidKeys) return vapidKeys;
   if (process.env.VAPID_PUBLIC_KEY && process.env.VAPID_PRIVATE_KEY) {
-    vapidKeys = { publicKey: process.env.VAPID_PUBLIC_KEY, privateKey: process.env.VAPID_PRIVATE_KEY };
-    return vapidKeys;
+    return { publicKey: process.env.VAPID_PUBLIC_KEY, privateKey: process.env.VAPID_PRIVATE_KEY };
   }
   const wp = await import("web-push");
-  vapidKeys = wp.default.generateVAPIDKeys();
-  return vapidKeys;
+  return wp.default.generateVAPIDKeys();
 }
 
 export async function getVapidPublicKey() {
@@ -26,10 +20,10 @@ export async function getVapidPublicKey() {
 }
 
 async function getWebPush() {
-  if (!webPush) webPush = await import("web-push");
+  const wp = await import("web-push");
   const keys = await getVapidKeys();
-  webPush.default.setVapidDetails("mailto:admin@classshare.edu", keys.publicKey, keys.privateKey);
-  return webPush.default;
+  wp.default.setVapidDetails("mailto:admin@classshare.edu", keys.publicKey, keys.privateKey);
+  return wp.default;
 }
 
 export async function subscribe(endpoint: string, p256dh: string, auth: string, adminId?: string) {

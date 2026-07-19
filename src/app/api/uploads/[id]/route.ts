@@ -6,6 +6,8 @@ import { authenticateRequest } from "@/lib/middleware";
 import { deleteFromCloudinary, getResourceType } from "@/lib/cloudinary";
 import { pushRealtimeEvent } from "@/lib/db-helpers";
 
+export const runtime = "nodejs";
+
 export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const rows = await db.select().from(uploads).where(eq(uploads.id, id)).limit(1);

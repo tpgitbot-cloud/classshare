@@ -4,7 +4,9 @@ import { admins } from "@/db/schema";
 import { eq, desc } from "drizzle-orm";
 import { authenticateRequest } from "@/lib/middleware";
 import { hashPassword } from "@/lib/auth";
-import { v4 as uuidv4 } from "uuid";
+import crypto from "crypto";
+
+export const runtime = "nodejs";
 
 export async function GET(req: NextRequest) {
   const auth = await authenticateRequest(req);
@@ -38,7 +40,7 @@ export async function POST(req: NextRequest) {
   const hashed = await hashPassword(password);
 
   const newAdmin = {
-    id: uuidv4(),
+    id: crypto.randomUUID(),
     name,
     email: email.toLowerCase(),
     username,

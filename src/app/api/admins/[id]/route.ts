@@ -5,6 +5,8 @@ import { eq } from "drizzle-orm";
 import { authenticateRequest } from "@/lib/middleware";
 import { hashPassword } from "@/lib/auth";
 
+export const runtime = "nodejs";
+
 export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   const auth = await authenticateRequest(req);
   if (!auth) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

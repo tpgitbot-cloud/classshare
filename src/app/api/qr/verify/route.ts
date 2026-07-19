@@ -3,6 +3,8 @@ import { db } from "@/db";
 import { qrTokens } from "@/db/schema";
 import { eq, and, gt } from "drizzle-orm";
 
+export const runtime = "nodejs";
+
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();

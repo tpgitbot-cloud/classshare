@@ -4,6 +4,8 @@ import { uploads, appSettings } from "@/db/schema";
 import { authenticateRequest } from "@/lib/middleware";
 import { count, eq, sql } from "drizzle-orm";
 
+export const runtime = "nodejs";
+
 export async function GET(req: NextRequest) {
   const auth = await authenticateRequest(req);
   if (!auth) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

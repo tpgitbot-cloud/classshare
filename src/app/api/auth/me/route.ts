@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { authenticateRequest } from "@/lib/middleware";
 
+export const runtime = "nodejs";
+
 export async function GET(req: NextRequest) {
   const auth = await authenticateRequest(req);
   if (!auth) {

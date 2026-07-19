@@ -5,6 +5,8 @@ import { eq } from "drizzle-orm";
 import { comparePassword, generateToken } from "@/lib/auth";
 import { ensureDefaultAdmin, ensureDefaultSettings } from "@/lib/db-helpers";
 
+export const runtime = "nodejs";
+
 export async function POST(req: NextRequest) {
   try {
     await ensureDefaultAdmin();

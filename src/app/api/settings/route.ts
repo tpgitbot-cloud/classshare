@@ -5,6 +5,8 @@ import { authenticateRequest } from "@/lib/middleware";
 import { eq } from "drizzle-orm";
 import { ensureDefaultSettings } from "@/lib/db-helpers";
 
+export const runtime = "nodejs";
+
 export async function GET(req: NextRequest) {
   await ensureDefaultSettings();
   const rows = await db.select().from(appSettings).limit(1);

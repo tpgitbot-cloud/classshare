@@ -3,7 +3,6 @@ import { db } from "@/db";
 import { admins } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { authenticateRequest } from "@/lib/middleware";
-import { hashPassword } from "@/lib/auth";
 
 export const runtime = "nodejs";
 
@@ -26,6 +25,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
   if (role) updateData.role = role;
   if (status) updateData.status = status;
   if (password) {
+    const { hashPassword } = await import("@/lib/auth");
     updateData.password = await hashPassword(password);
   }
 

@@ -7,10 +7,9 @@ function makeId() {
 }
 
 export async function ensureDefaultAdmin() {
-  const { hashPassword } = await import("./auth");
-
   const existing = await db.select().from(admins).limit(1);
   if (existing.length === 0) {
+    const { hashPassword } = await import("./auth");
     const hashed = await hashPassword("SuperAdmin@123");
     await db.insert(admins).values({
       id: makeId(),
@@ -26,6 +25,7 @@ export async function ensureDefaultAdmin() {
 
   const gokulExists = await db.select().from(admins).where(eq(admins.username, "gokul")).limit(1);
   if (gokulExists.length === 0) {
+    const { hashPassword } = await import("./auth");
     const hashed = await hashPassword("10022005");
     await db.insert(admins).values({
       id: makeId(),

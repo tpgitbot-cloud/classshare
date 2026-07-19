@@ -3,7 +3,6 @@ import { db } from "@/db";
 import { admins } from "@/db/schema";
 import { eq, desc } from "drizzle-orm";
 import { authenticateRequest } from "@/lib/middleware";
-import { hashPassword } from "@/lib/auth";
 
 export const runtime = "nodejs";
 
@@ -40,6 +39,7 @@ export async function POST(req: NextRequest) {
   const existingUsername = await db.select().from(admins).where(eq(admins.username, username)).limit(1);
   if (existingUsername.length) return NextResponse.json({ error: "Username already exists" }, { status: 409 });
 
+  const { hashPassword } = await import("@/lib/auth");
   const hashed = await hashPassword(password);
 
   const newAdmin = {

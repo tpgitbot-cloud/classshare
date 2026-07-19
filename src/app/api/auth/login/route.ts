@@ -2,12 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
 import { admins } from "@/db/schema";
 import { eq } from "drizzle-orm";
-import { comparePassword, generateToken } from "@/lib/auth";
 
 export const runtime = "nodejs";
 
 export async function POST(req: NextRequest) {
   try {
+    const { comparePassword, generateToken } = await import("@/lib/auth");
     const body = await req.json();
     const { username, email, password } = body;
 

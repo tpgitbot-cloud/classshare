@@ -3,10 +3,10 @@ import { generateQRDataUrl } from "@/lib/qr";
 import { authenticateRequest } from "@/lib/middleware";
 import { db } from "@/db";
 import { qrTokens } from "@/db/schema";
-import { eq, and, gt } from "drizzle-orm";
+import { eq, and, lt } from "drizzle-orm";
 import crypto from "crypto";
 
-const TOKEN_DURATION_SECONDS = 60;
+const TOKEN_DURATION_SECONDS = 300;
 
 export async function GET(req: NextRequest) {
   const auth = await authenticateRequest(req);
@@ -16,7 +16,7 @@ export async function GET(req: NextRequest) {
 
   // Clean up expired tokens for this admin
   await db.delete(qrTokens).where(
-    and(eq(qrTokens.adminId, admin.id), eq(qrTokens.expiresAt, new Date(0)))
+    and(eq(qrTokens.adminId, admin.id), lt(qrTokens.expiresAt, new Date()))
   );
 
   // Generate a unique token

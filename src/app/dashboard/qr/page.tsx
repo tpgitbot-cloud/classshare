@@ -86,7 +86,7 @@ export default function QRPage() {
         </div>
         <div className="rounded-2xl bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/50 p-4">
           <p className="font-bold text-sm text-amber-800 dark:text-amber-200">⏱ Token expires in {countdown}s</p>
-          <p className="text-xs text-amber-700 dark:text-amber-300 mt-1">QR auto-refreshes. Each token is valid for 1 minute — students must scan while active.</p>
+          <p className="text-xs text-amber-700 dark:text-amber-300 mt-1">QR auto-refreshes. Each token is valid for 5 minutes — students must scan while active.</p>
         </div>
         <div className="rounded-2xl bg-gradient-to-br from-violet-600 to-indigo-600 p-5 text-white">
           <p className="font-bold">Tips for smooth class</p>

@@ -32,9 +32,7 @@ export async function GET(req: NextRequest) {
     let allUploads = await db
       .select()
       .from(uploads)
-      .where(
-        admin.role === "super_admin" ? undefined : eq(uploads.adminId, admin.id)
-      )
+      .where(eq(uploads.adminId, admin.id))
       .orderBy(desc(uploads.uploadDate));
 
     // Filter

@@ -230,13 +230,13 @@ export async function POST(req: NextRequest) {
     if (settings) {
       await db
         .update(appSettings)
-        .set({ storageUsed: (settings.storageUsed || 0) + newUpload.fileSize, updatedAt: new Date() })
+        .set({ storageUsed: (settings.storageUsed || 0) + uploadData.fileSize, updatedAt: new Date() })
         .where(eq(appSettings.id, settings.id));
     }
 
-    pushRealtimeEvent({ type: "new_upload", data: newUpload });
+    pushRealtimeEvent({ type: "new_upload", data: uploadData });
 
-    return NextResponse.json({ success: true, upload: newUpload });
+    return NextResponse.json({ success: true, upload: uploadData });
   } catch (e: any) {
     console.error("POST upload error", e);
     return NextResponse.json({ error: "Upload failed: " + (e.message || "unknown") }, { status: 500 });

@@ -3,15 +3,11 @@ import { db } from "@/db";
 import { admins } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { comparePassword, generateToken } from "@/lib/auth";
-import { ensureDefaultAdmin, ensureDefaultSettings } from "@/lib/db-helpers";
 
 export const runtime = "nodejs";
 
 export async function POST(req: NextRequest) {
   try {
-    await ensureDefaultAdmin();
-    await ensureDefaultSettings();
-
     const body = await req.json();
     const { username, email, password } = body;
 

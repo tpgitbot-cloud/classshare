@@ -87,7 +87,37 @@ export default function DashboardPage() {
   useEffect(() => {
     fetchStats();
     fetchQR();
+    if ("Notification" in window && "serviceWorker" in navigator && Notification.permission === "granted") {
+      subscribePush();
+    } else if ("Notification" in window && Notification.permission === "default") {
+      Notification.requestPermission().then((p) => { if (p === "granted") subscribePush(); });
+    }
   }, []);
+
+  const urlBase64ToUint8Array = (base64: string) => {
+    const padding = "=".repeat((4 - (base64.length % 4)) % 4);
+    const b64 = (base64 + padding).replace(/-/g, "+").replace(/_/g, "/");
+    const raw = atob(b64);
+    return Uint8Array.from([...raw].map((c) => c.charCodeAt(0)));
+  };
+
+  const subscribePush = async () => {
+    try {
+      const keyRes = await fetch("/api/push/vapid-key");
+      if (!keyRes.ok) return;
+      const { publicKey } = await keyRes.json();
+      const reg = await navigator.serviceWorker.ready;
+      const sub = await reg.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(publicKey),
+      });
+      await fetch("/api/push/subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(sub.toJSON()),
+      });
+    } catch {}
+  };
 
   useEffect(() => {
     fetchUploads();

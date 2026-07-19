@@ -4,6 +4,7 @@ import { uploads, appSettings, qrTokens } from "@/db/schema";
 import { eq, desc, and, gt, ilike, sql } from "drizzle-orm";
 import { uploadToCloudinary, getCloudinaryFolderPath, getFileTypeFromName, getResourceType } from "@/lib/cloudinary";
 import { pushRealtimeEvent, ensureDefaultSettings } from "@/lib/db-helpers";
+import { sendPushNotification } from "@/lib/push";
 import { authenticateRequest } from "@/lib/middleware";
 
 export const runtime = "nodejs";
@@ -235,6 +236,11 @@ export async function POST(req: NextRequest) {
     }
 
     pushRealtimeEvent({ type: "new_upload", data: uploadData });
+    sendPushNotification(
+      "New File Uploaded",
+      `${uploadData.studentName} — ${uploadData.originalFileName}`,
+      "/dashboard"
+    );
 
     return NextResponse.json({ success: true, upload: uploadData });
   } catch (e: any) {

@@ -57,6 +57,15 @@ export const qrTokens = pgTable("qr_tokens", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
+export const pushSubscriptions = pgTable("push_subscriptions", {
+  id: text("id").primaryKey(),
+  adminId: text("admin_id").references(() => admins.id, { onDelete: "cascade" }),
+  endpoint: text("endpoint").notNull(),
+  p256dh: text("p256dh").notNull(),
+  auth: text("auth").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
 export type Admin = typeof admins.$inferSelect;
 export type NewAdmin = typeof admins.$inferInsert;
 export type Upload = typeof uploads.$inferSelect;
@@ -64,3 +73,5 @@ export type NewUpload = typeof uploads.$inferInsert;
 export type AppSetting = typeof appSettings.$inferSelect;
 export type QrToken = typeof qrTokens.$inferSelect;
 export type NewQrToken = typeof qrTokens.$inferInsert;
+export type PushSubscription = typeof pushSubscriptions.$inferSelect;
+export type NewPushSubscription = typeof pushSubscriptions.$inferInsert;

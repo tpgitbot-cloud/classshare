@@ -24,15 +24,15 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Account is deactivated" }, { status: 403 });
     }
 
-    const bcrypt = await import("bcryptjs");
+    const bcrypt = (await import("bcryptjs")).default;
     const isValid = await bcrypt.compare(password, adminRow.password);
     if (!isValid) {
       return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
     }
 
-    const jwt = await import("jsonwebtoken");
+    const jwt = (await import("jsonwebtoken")).default;
     const secret = process.env.JWT_SECRET || "classshare_super_secret_key_2024_production";
-    const token = jwt.default.sign(
+    const token = jwt.sign(
       { id: adminRow.id, role: adminRow.role, email: adminRow.email },
       secret,
       { expiresIn: "7d" }
@@ -61,7 +61,6 @@ export async function POST(req: NextRequest) {
 
     return response;
   } catch (e: any) {
-    const message = e instanceof Error ? e.message : String(e);
-    return NextResponse.json({ error: "Internal server error", detail: message }, { status: 500 });
+    return NextResponse.json({ error: "Internal server error", detail: String(e.message || e) }, { status: 500 });
   }
 }

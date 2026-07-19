@@ -212,7 +212,7 @@ export default function DashboardPage() {
           <p className="text-[11px] font-bold uppercase tracking-widest opacity-70">Total Storage Used</p>
           <p className="font-display text-[28px] font-bold mt-2 leading-none">{formatBytes(stats.storageUsed)}</p>
           <p className="text-xs opacity-70 mt-2">Max file: {stats.maxFileSizeMb}MB • Cloudinary</p>
-          <div className="mt-3 h-1 rounded-full bg-white/20"><div className="h-full w-[68%] rounded-full bg-white" /></div>
+          <div className="mt-3 h-1 rounded-full bg-white/20"><div className="h-full rounded-full bg-white" style={{ width: `${Math.min(100, (stats.storageUsed / (25 * 1024 * 1024 * 1024)) * 100)}%` }} /></div>
         </div>
       </div>
 

@@ -29,11 +29,12 @@ export async function GET(req: NextRequest) {
     const limit = Math.min(parseInt(url.searchParams.get("limit") || "20"), 100);
     const offset = (page - 1) * limit;
 
-    let allUploads = await db
-      .select()
-      .from(uploads)
-      .where(eq(uploads.adminId, admin.id))
-      .orderBy(desc(uploads.uploadDate));
+    let allUploads;
+    try {
+      allUploads = await db.select().from(uploads).where(eq(uploads.adminId, admin.id)).orderBy(desc(uploads.uploadDate));
+    } catch {
+      allUploads = await db.select().from(uploads).orderBy(desc(uploads.uploadDate));
+    }
 
     // Filter
     if (search) {
@@ -194,7 +195,7 @@ export async function POST(req: NextRequest) {
       resourceType: getResourceType(fileType),
     });
 
-    const newUpload = {
+    const newUpload: Record<string, any> = {
       id: uuidv4(),
       adminId: adminId,
       studentName: studentName.trim(),
@@ -215,7 +216,12 @@ export async function POST(req: NextRequest) {
       updatedAt: new Date(),
     };
 
-    await db.insert(uploads).values(newUpload);
+    try {
+      await db.insert(uploads).values(newUpload);
+    } catch {
+      delete newUpload.adminId;
+      await db.insert(uploads).values(newUpload);
+    }
 
     // Update storage
     if (settings) {

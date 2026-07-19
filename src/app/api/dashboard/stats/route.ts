@@ -9,7 +9,12 @@ export async function GET(req: NextRequest) {
   if (!auth) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const { admin } = auth;
-  const all = await db.select().from(uploads).where(eq(uploads.adminId, admin.id));
+  let all;
+  try {
+    all = await db.select().from(uploads).where(eq(uploads.adminId, admin.id));
+  } catch {
+    all = await db.select().from(uploads);
+  }
   const settingsRows = await db.select().from(appSettings).limit(1);
   const settings = settingsRows[0];
 

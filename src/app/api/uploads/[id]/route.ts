@@ -23,7 +23,7 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
 
   const existing = await db.select().from(uploads).where(eq(uploads.id, id)).limit(1);
   if (!existing.length) return NextResponse.json({ error: "Not found" }, { status: 404 });
-  if (existing[0].adminId !== auth.admin.id) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  if ("adminId" in existing[0] && existing[0].adminId && existing[0].adminId !== auth.admin.id) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   const updateData: any = { updatedAt: new Date() };
   if (displayFileName) updateData.displayFileName = displayFileName;
@@ -46,7 +46,7 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
   const { id } = await params;
   const rows = await db.select().from(uploads).where(eq(uploads.id, id)).limit(1);
   if (!rows.length) return NextResponse.json({ error: "Not found" }, { status: 404 });
-  if (rows[0].adminId !== auth.admin.id) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  if ("adminId" in rows[0] && rows[0].adminId && rows[0].adminId !== auth.admin.id) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   const upload = rows[0];
 

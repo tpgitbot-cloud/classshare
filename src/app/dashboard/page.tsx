@@ -70,8 +70,10 @@ export default function DashboardPage() {
 
   const fetchQR = async () => {
     try {
+      const token = localStorage.getItem("token");
       const res = await fetch("/api/qr", {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token") || ""}` },
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+        credentials: "include",
       });
       if (!res.ok) return;
       const data = await res.json();

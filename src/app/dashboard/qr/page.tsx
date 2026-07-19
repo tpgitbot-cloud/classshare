@@ -12,7 +12,11 @@ export default function QRPage() {
   const loadQR = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await fetch("/api/qr");
+      const token = localStorage.getItem("token");
+      const res = await fetch("/api/qr", {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+        credentials: "include",
+      });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error);
       setQr(data.qr);

@@ -4,6 +4,7 @@ import { authenticateRequest } from "@/lib/middleware";
 import { db } from "@/db";
 import { qrTokens } from "@/db/schema";
 import { eq, and, lt } from "drizzle-orm";
+import { v4 as uuidv4 } from "uuid";
 import crypto from "crypto";
 
 const TOKEN_DURATION_SECONDS = 300;
@@ -24,7 +25,7 @@ export async function GET(req: NextRequest) {
   const expiresAt = new Date(Date.now() + TOKEN_DURATION_SECONDS * 1000);
 
   await db.insert(qrTokens).values({
-    id: crypto.randomUUID(),
+    id: uuidv4(),
     adminId: admin.id,
     token,
     expiresAt,

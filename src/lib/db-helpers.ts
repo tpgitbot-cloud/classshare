@@ -1,15 +1,19 @@
 import { db } from "@/db";
 import { admins, uploads, appSettings } from "@/db/schema";
 import { eq, desc, and, ilike, sql } from "drizzle-orm";
-import crypto from "crypto";
-import { hashPassword } from "./auth";
+
+function makeId() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 10);
+}
 
 export async function ensureDefaultAdmin() {
+  const { hashPassword } = await import("./auth");
+
   const existing = await db.select().from(admins).limit(1);
   if (existing.length === 0) {
     const hashed = await hashPassword("SuperAdmin@123");
     await db.insert(admins).values({
-      id: crypto.randomUUID(),
+      id: makeId(),
       name: "Super Admin",
       email: "superadmin@classshare.edu",
       username: "superadmin",
@@ -24,7 +28,7 @@ export async function ensureDefaultAdmin() {
   if (gokulExists.length === 0) {
     const hashed = await hashPassword("10022005");
     await db.insert(admins).values({
-      id: crypto.randomUUID(),
+      id: makeId(),
       name: "Gokul",
       email: "gokul@classshare.edu",
       username: "gokul",

@@ -4,9 +4,12 @@ import { authenticateRequest } from "@/lib/middleware";
 import { db } from "@/db";
 import { qrTokens } from "@/db/schema";
 import { eq, and, lt } from "drizzle-orm";
-import crypto from "crypto";
 
 export const runtime = "nodejs";
+
+function makeId() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 10);
+}
 
 const TOKEN_DURATION_SECONDS = 300;
 
@@ -22,11 +25,11 @@ export async function GET(req: NextRequest) {
   );
 
   // Generate a unique token
-  const token = crypto.randomUUID().replace(/-/g, "") + Date.now().toString(36);
+  const token = makeId() + Date.now().toString(36);
   const expiresAt = new Date(Date.now() + TOKEN_DURATION_SECONDS * 1000);
 
   await db.insert(qrTokens).values({
-    id: crypto.randomUUID(),
+    id: makeId(),
     adminId: admin.id,
     token,
     expiresAt,

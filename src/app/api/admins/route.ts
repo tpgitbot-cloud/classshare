@@ -4,9 +4,12 @@ import { admins } from "@/db/schema";
 import { eq, desc } from "drizzle-orm";
 import { authenticateRequest } from "@/lib/middleware";
 import { hashPassword } from "@/lib/auth";
-import crypto from "crypto";
 
 export const runtime = "nodejs";
+
+function makeId() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 10);
+}
 
 export async function GET(req: NextRequest) {
   const auth = await authenticateRequest(req);
@@ -40,7 +43,7 @@ export async function POST(req: NextRequest) {
   const hashed = await hashPassword(password);
 
   const newAdmin = {
-    id: crypto.randomUUID(),
+    id: makeId(),
     name,
     email: email.toLowerCase(),
     username,

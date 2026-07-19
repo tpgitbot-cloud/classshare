@@ -2,12 +2,15 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
 import { uploads, appSettings, qrTokens } from "@/db/schema";
 import { eq, desc, and, gt, ilike, sql } from "drizzle-orm";
-import crypto from "crypto";
 import { uploadToCloudinary, getCloudinaryFolderPath, getFileTypeFromName, getResourceType } from "@/lib/cloudinary";
 import { pushRealtimeEvent, ensureDefaultSettings } from "@/lib/db-helpers";
 import { authenticateRequest } from "@/lib/middleware";
 
 export const runtime = "nodejs";
+
+function makeId() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 10);
+}
 
 const ALLOWED_TYPES = ["pdf", "ppt", "pptx", "doc", "docx", "jpg", "jpeg", "png", "zip", "webp", "gif"];
 
@@ -198,7 +201,7 @@ export async function POST(req: NextRequest) {
     });
 
     const newUpload: Record<string, any> = {
-      id: crypto.randomUUID(),
+      id: makeId(),
       adminId: adminId,
       studentName: studentName.trim(),
       registerNumber: registerNumber.trim(),

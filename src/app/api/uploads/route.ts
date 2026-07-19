@@ -200,9 +200,8 @@ export async function POST(req: NextRequest) {
       resourceType: getResourceType(fileType),
     });
 
-    const newUpload: Record<string, any> = {
+    const uploadData = {
       id: makeId(),
-      adminId: adminId,
       studentName: studentName.trim(),
       registerNumber: registerNumber.trim(),
       department: department.trim(),
@@ -221,11 +220,10 @@ export async function POST(req: NextRequest) {
       updatedAt: new Date(),
     };
 
-    try {
-      await db.insert(uploads).values(newUpload);
-    } catch {
-      delete newUpload.adminId;
-      await db.insert(uploads).values(newUpload);
+    if (adminId) {
+      await db.insert(uploads).values({ ...uploadData, adminId });
+    } else {
+      await db.insert(uploads).values(uploadData);
     }
 
     // Update storage
